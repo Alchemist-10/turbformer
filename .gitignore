@@ -10,7 +10,7 @@ build/
 dist/
 *.egg-info/
 .eggs/
-
+*.h5
 # Virtual Environments
 .venv/
 venv/

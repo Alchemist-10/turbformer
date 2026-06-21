@@ -3,6 +3,7 @@ import h5py
 import os
 from scipy.special import genlaguerre
 import argparse
+import math
 
 
 
@@ -12,7 +13,7 @@ def cart2pol(x, y):
 def lg_beam(X, Y, l, p, w0=0.03):
     r, phi = cart2pol(X, Y)
     L_pl = genlaguerre(p, abs(l))
-    term1 = np.sqrt(2 * np.math.factorial(p) / (np.pi * np.math.factorial(p + abs(l))))
+    term1 = np.sqrt(2 * math.factorial(p) / (np.pi * math.factorial(p + abs(l))))
     term2 = (1 / w0) * ((np.sqrt(2) * r / w0) ** abs(l))
     term3 = L_pl(2 * r ** 2 / w0 ** 2) * np.exp(-r ** 2 / w0 ** 2)
     phase = np.exp(1j * l * phi)
