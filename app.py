@@ -9,15 +9,15 @@ def run_pipeline():
 
     current_python = sys.executable
 
-    logs.append("=== STAGE 1: Starting Data Generation ===")
-    yield "\n".join(logs), None
-
-    process = subprocess.Popen([current_python, "data/generate_hdf5.py"], stdout=subprocess.PIPE,
-                               stderr=subprocess.STDOUT, text=True)
-    for line in process.stdout:
-        logs.append(f"[DataGen] {line.strip()}")
-        yield "\n".join(logs), None
-    process.wait()
+    # logs.append("=== STAGE 1: Starting Data Generation ===")
+    # yield "\n".join(logs), None
+    #
+    # process = subprocess.Popen([current_python, "data/generate_hdf5.py"], stdout=subprocess.PIPE,
+    #                            stderr=subprocess.STDOUT, text=True)
+    # for line in process.stdout:
+    #     logs.append(f"[DataGen] {line.strip()}")
+    #     yield "\n".join(logs), None
+    # process.wait()
 
     logs.append("\n=== STAGE 2: Starting Model Training (5 Epochs for Demo) ===")
     yield "\n".join(logs), None
