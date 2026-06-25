@@ -8,9 +8,11 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 
 import os
 
-if os.path.exists("/kaggle/input/vortex_beam_dataset"):
-    train_path = "/kaggle/input/vortex_beam_dataset/train.h5"
-    val_path = "/kaggle/input/vortex_beam_dataset/val.h5"
+KAGGLE_DATASET = "/kaggle/input/datasets/akshay10alchemist/vortex-beam-dataset"
+
+if os.path.isfile(os.path.join(KAGGLE_DATASET, "train.h5")):
+    train_path = os.path.join(KAGGLE_DATASET, "train.h5")
+    val_path = os.path.join(KAGGLE_DATASET, "val.h5")
 else:
     train_path = "train.h5"
     val_path = "val.h5"
