@@ -100,12 +100,13 @@ class OAMRestoreNet(nn.Module):
         super().__init__()
 
         self.encoder = timm.create_model(
-            "swin_tiny_patch4_window7_224",
-            pretrained=pretrained,
-            features_only=True,
-            in_chans=in_ch,
-            out_indices=(0, 1, 2, 3),
-        )
+        "swin_tiny_patch4_window7_224",
+        pretrained=pretrained,
+        features_only=True,
+        in_chans=in_ch,
+        out_indices=(0, 1, 2, 3),
+        img_size=128,
+)
 
         enc_chs = self.encoder.feature_info.channels()  # usually [96, 192, 384, 768]
 
