@@ -35,7 +35,7 @@ def plot_results(model_path, data_path, output_dir="plots"):
     for i in range(4):
         # Distorted Input
         axes[i, 0].imshow(distorted_intensity[i], cmap='inferno')
-        axes[i, 0].set_title(f"Distorted Input\nMode: {int(meta[i, 0])}, r0: {meta[i, 1]:.3f}")
+        axes[i, 0].set_title(f"Distorted Input\nMode: {int(meta[i, 0])}, r0: {meta[i, 2]:.3f}")
         axes[i, 0].axis('off')
 
         # Restored Output

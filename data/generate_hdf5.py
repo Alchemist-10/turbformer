@@ -15,6 +15,7 @@ def cart2pol(x, y):
 def lg_beam(X, Y, l, p, w0=0.03):
     """
     Paraxial Laguerre-Gaussian beam (unnormalized but stable for simulation).
+
     """
     r, phi = cart2pol(X, Y)
     L_pl = genlaguerre(p, abs(l))
@@ -33,6 +34,9 @@ def kolmogorov_phase_screen(r0, N, dx, rng):
     Fourier-domain Kolmogorov phase screen.
     r0: Fried parameter (smaller => stronger turbulence)
     """
+    if r0 <= 0:
+        raise ValueError("r0 must be positive. Use np.inf or skip turbulence for a clean sample.")
+
     fx = np.fft.fftfreq(N, d=dx)
     fy = np.fft.fftfreq(N, d=dx)
     FX, FY = np.meshgrid(fx, fy, indexing="xy")
@@ -51,7 +55,12 @@ def kolmogorov_phase_screen(r0, N, dx, rng):
 
     phase = np.fft.ifft2(phase_freq).real
     phase -= phase.mean()
-    phase /= (phase.std() + 1e-8)
+
+    # The raw inverse FFT amplitude depends on the discrete grid scaling.
+    # Normalize only the random shape, then restore Fried-parameter strength.
+    aperture_m = N * dx
+    phase_std = (aperture_m / r0) ** (5.0 / 6.0)
+    phase = phase / (phase.std() + 1e-8) * phase_std
     return phase
 
 
@@ -82,7 +91,7 @@ def generate_dataset(
     image_size=128,
     aperture_m=0.10,
     wavelength=632.8e-9,
-    z_range=(100.0, 1000.0),
+    z_range=(50.0,50.0),
     seed=42,
 ):
     rng = np.random.default_rng(seed)
@@ -186,7 +195,7 @@ if __name__ == "__main__":
     generate_dataset(
         out_path="train.h5",
         num_samples=args.train_samples,
-        r0_range=(0.02, 0.10),
+        r0_range=(0.15, 0.3),
         image_size=args.image_size,
         aperture_m=args.aperture_m,
         seed=args.seed,
@@ -194,7 +203,7 @@ if __name__ == "__main__":
     generate_dataset(
         out_path="val.h5",
         num_samples=args.val_samples,
-        r0_range=(0.02, 0.10),
+        r0_range=(0.15, 0.3),
         image_size=args.image_size,
         aperture_m=args.aperture_m,
         seed=args.seed + 1,
@@ -202,7 +211,7 @@ if __name__ == "__main__":
     generate_dataset(
         out_path="test_ood.h5",
         num_samples=args.test_samples,
-        r0_range=(0.005, 0.015),
+        r0_range=(0.15, 0.35),
         image_size=args.image_size,
         aperture_m=args.aperture_m,
         seed=args.seed + 2,

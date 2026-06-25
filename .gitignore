@@ -80,7 +80,7 @@ figures/
 plots/
 visualizations/
 
-*.png
+
 *.jpg
 *.jpeg
 *.pdf

@@ -41,6 +41,7 @@ def main():
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--lr', type=float, default=2e-4)
     parser.add_argument('--no_oam', action='store_true', help='Ablation: Disable OAM Loss')
+    parser.add_argument('--resume', type=str, default=None, help='Path to checkpoint to resume training from')
     args = parser.parse_args()
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -60,10 +61,30 @@ def main():
     criterion = OAMCompositeLoss(lambda_oam=0.0 if args.no_oam else 0.1).to(device)
 
     best_loss = float('inf')
+    start_epoch = 0
+    total_epochs = args.epochs
+
+    # Resume logic: restore all state needed to continue training exactly after
+    # the last completed checkpoint epoch, while treating --epochs as additional
+    # epochs to run after the checkpoint.
+    if args.resume:
+        print(f"[Checkpoint] Resuming from {args.resume}", flush=True)
+        checkpoint = torch.load(args.resume, map_location=device)
+        model.load_state_dict(checkpoint["model"])
+        optimizer.load_state_dict(checkpoint["optimizer"])
+        scheduler.load_state_dict(checkpoint["scheduler"])
+        best_loss = checkpoint["best_loss"]
+        last_completed_epoch = checkpoint["epoch"]
+        start_epoch = last_completed_epoch
+        total_epochs = last_completed_epoch + args.epochs
+        print(f"[Checkpoint] Loaded checkpoint from epoch {last_completed_epoch}", flush=True)
+        print(f"[Checkpoint] Continuing training from epoch {start_epoch + 1}", flush=True)
+    else:
+        print("[Checkpoint] Starting training from scratch.", flush=True)
     
     print("[Init] Starting pipeline execution loop.", flush=True)
-    for epoch in range(args.epochs):
-        train_loss = train_one_epoch(epoch, args.epochs, model, train_loader, optimizer, criterion, device)
+    for epoch in range(start_epoch, total_epochs):
+        train_loss = train_one_epoch(epoch, total_epochs, model, train_loader, optimizer, criterion, device)
         scheduler.step()
 
         # Simple Validation Check
@@ -83,6 +104,16 @@ def main():
             best_loss = val_loss
             print(f"[Checkpoint] Validation Loss improved. Saving weights to 'best_model.pth'", flush=True)
             torch.save(model.state_dict(), 'best_model.pth')
+
+        # Resume logic: save the full training state so optimizer, scheduler,
+        # best validation loss, and epoch progress can be restored later.
+        torch.save({
+            "epoch": epoch + 1,
+            "model": model.state_dict(),
+            "optimizer": optimizer.state_dict(),
+            "scheduler": scheduler.state_dict(),
+            "best_loss": best_loss,
+        }, "checkpoint.pth")
 
 
 if __name__ == '__main__':
