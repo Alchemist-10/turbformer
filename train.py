@@ -6,6 +6,15 @@ from models.swin_restorer import OAMRestoreNet
 from engine.losses import OAMCompositeLoss
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
+import os
+
+if os.path.exists("/kaggle/input/vortex_beam_dataset"):
+    train_path = "/kaggle/input/vortex_beam_dataset/train.h5"
+    val_path = "/kaggle/input/vortex_beam_dataset/val.h5"
+else:
+    train_path = "train.h5"
+    val_path = "val.h5"
+
 
 def train_one_epoch(epoch, epochs, model, dataloader, optimizer, criterion, device):
     model.train()
@@ -48,8 +57,8 @@ def main():
     print(f"[Init] Using execution device: {device}", flush=True)
 
     # Force num_workers=0 to prevent multi-processing deadlock freezes inside server containers
-    train_ds = PhaseAwareDataset('train.h5')
-    val_ds = PhaseAwareDataset('val.h5')
+    train_ds = PhaseAwareDataset(train_path)
+    val_ds = PhaseAwareDataset(val_path)
     train_loader = DataLoader(train_ds, batch_size=args.batch_size, shuffle=True, num_workers=0)
     val_loader = DataLoader(val_ds, batch_size=args.batch_size, shuffle=False, num_workers=0)
 
