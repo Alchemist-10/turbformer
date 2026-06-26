@@ -1,9 +1,18 @@
 import torch
 import time
 import numpy as np
+import os
 from data.dataset import PhaseAwareDataset
 from models.swin_restorer import OAMRestoreNet
 from torch.utils.data import DataLoader
+
+
+KAGGLE_DATASET = "/kaggle/input/datasets/akshay10alchemist/vortex-beam-224"
+OOD_PATH = os.path.join(KAGGLE_DATASET, "test_ood.h5")
+if not os.path.isfile(OOD_PATH):
+    OOD_PATH = "test_ood.h5"
+
+MODEL_PATH = "best_model.pth"
 
 
 def compute_metrics(model, dataloader, device):
@@ -43,6 +52,6 @@ def compute_metrics(model, dataloader, device):
 if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = OAMRestoreNet().to(device)
-    model.load_state_dict(torch.load('best_model.pth'))
-    ood_loader = DataLoader(PhaseAwareDataset('test_ood.h5'), batch_size=8)
+    model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
+    ood_loader = DataLoader(PhaseAwareDataset(OOD_PATH), batch_size=8)
     compute_metrics(model, ood_loader, device)
