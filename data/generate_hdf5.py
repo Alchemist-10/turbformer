@@ -24,7 +24,9 @@ def lg_beam(X, Y, l, p, w0=0.03):
     norm = math.sqrt(2 * math.factorial(p) / (math.pi * math.factorial(p + abs(l))))
     rho = np.sqrt(2.0) * r / w0
 
-    amplitude = (norm / w0) * (rho ** abs(l)) * L_pl(2 * r**2 / w0**2) * np.exp(-r**2 / w0**2)
+    amplitude = (
+        (norm / w0) * (rho ** abs(l)) * L_pl(2 * r**2 / w0**2) * np.exp(-(r**2) / w0**2)
+    )
     phase = np.exp(1j * l * phi)
     return amplitude * phase
 
@@ -35,7 +37,9 @@ def kolmogorov_phase_screen(r0, N, dx, rng):
     r0: Fried parameter (smaller => stronger turbulence)
     """
     if r0 <= 0:
-        raise ValueError("r0 must be positive. Use np.inf or skip turbulence for a clean sample.")
+        raise ValueError(
+            "r0 must be positive. Use np.inf or skip turbulence for a clean sample."
+        )
 
     fx = np.fft.fftfreq(N, d=dx)
     fy = np.fft.fftfreq(N, d=dx)
@@ -88,10 +92,10 @@ def generate_dataset(
     out_path,
     num_samples,
     r0_range,
-    image_size=128,
+    image_size=224,
     aperture_m=0.10,
     wavelength=632.8e-9,
-    z_range=(50.0,50.0),
+    z_range=(50.0, 50.0),
     seed=42,
 ):
     rng = np.random.default_rng(seed)
@@ -187,7 +191,7 @@ if __name__ == "__main__":
     parser.add_argument("--train_samples", type=int, default=12000)
     parser.add_argument("--val_samples", type=int, default=1500)
     parser.add_argument("--test_samples", type=int, default=1500)
-    parser.add_argument("--image_size", type=int, default=128)
+    parser.add_argument("--image_size", type=int, default=224)
     parser.add_argument("--aperture_m", type=float, default=0.10)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()

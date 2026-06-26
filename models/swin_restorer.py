@@ -105,7 +105,6 @@ class OAMRestoreNet(nn.Module):
         features_only=True,
         in_chans=in_ch,
         out_indices=(0, 1, 2, 3),
-        img_size=128,
 )
 
         enc_chs = self.encoder.feature_info.channels()  # usually [96, 192, 384, 768]
