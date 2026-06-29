@@ -4,16 +4,27 @@ import matplotlib.pyplot as plt
 import h5py
 
 from models.swin_restorer import OAMRestoreNet
-
+import os
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-MODEL_PATH = "best_model_epoch34.pth"
+MODEL_PATHS = [
+    "/kaggle/input/models/akshay10alchemist/swin-restorer-v1/pytorch/default/1/best_model_epoch34.pth",
+    "best_model_epoch34.pth",
+]
 DATA_PATH = "test_ood.h5"
+
+
+def resolve_model_path(paths):
+    for path in paths:
+        if os.path.isfile(path):
+            return path
+    return paths[-1]
 
 # --------------------------
 # Load model
 # --------------------------
 model = OAMRestoreNet().to(DEVICE)
-model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
+model_path = resolve_model_path(MODEL_PATHS)
+model.load_state_dict(torch.load(model_path, map_location=DEVICE))
 model.eval()
 
 # --------------------------
