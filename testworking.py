@@ -10,7 +10,10 @@ MODEL_PATHS = [
     "/kaggle/input/models/akshay10alchemist/swin-restorer-v1/pytorch/default/1/best_model_epoch34.pth",
     "best_model_epoch34.pth",
 ]
-DATA_PATH = "test_ood.h5"
+KAGGLE_DATASET = "/kaggle/input/datasets/akshay10alchemist/vortex-beam-224"
+DATA_PATH = os.path.join(KAGGLE_DATASET, "test_ood.h5")
+if not os.path.isfile(DATA_PATH):
+    DATA_PATH = "test_ood.h5"
 
 
 def resolve_model_path(paths):
