@@ -34,7 +34,7 @@ model.eval()
 # Pick one sample
 # --------------------------
 with h5py.File(DATA_PATH, "r") as f:
-    idx = 0  # change this to any sample
+    idx = 100  # change this to any sample
 
     inp = f["input"][idx]
     gt = f["ground_truth"][idx]

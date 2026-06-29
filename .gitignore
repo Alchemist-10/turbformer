@@ -81,8 +81,6 @@ plots/
 visualizations/
 
 
-*.jpg
-*.jpeg
 *.pdf
 
 # Uncomment if you want figures tracked:
